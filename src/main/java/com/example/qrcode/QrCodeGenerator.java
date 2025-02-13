@@ -28,23 +28,23 @@ import java.io.File;
 @Slf4j
 public class QrCodeGenerator {
 
-    @Value("classpath:images/logo.png")
+    @Value("classpath:images/img.png")
     private Resource logoPngResource;
 
     @PostMapping(value = "/generate", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<BufferedImage> barbecueEAN13Barcode(@RequestBody String barcode)
+    public ResponseEntity<BufferedImage> barbecueEAN13Barcode(@RequestBody QrRequestDTO requestDTO)
             throws Exception {
-        return ResponseEntity.ok(QrEngine.buildQrCodeWithLogo(barcode,
+        return ResponseEntity.ok(QrEngine.buildQrCodeWithLogo(requestDTO.getBarcode(),
                 new File(logoPngResource.getURI()),
                 QrConfiguration.builder()
-                        .withSize(1000)
-                        .withRelativeBorderSize(.05)
-                        .withRelativeBorderRound(.2)
-                        .withDarkColor(new Color(44, 219, 236))
-                        .withLightColor(Color.white)
-                        .withPositionalsColor(new Color(0, 0, 0))
-                        .withCircularPositionals(true)
-                        .withRelativeLogoSize(.249)
+                        .withSize(requestDTO.getConfig().getSize())
+                        .withRelativeBorderSize(requestDTO.getConfig().getRelativeBorderSize())
+                        .withRelativeBorderRound(requestDTO.getConfig().getRelativeBorderRound())
+                        .withDarkColor(Color.decode(requestDTO.getConfig().getDarkColor()))
+                        .withLightColor(Color.decode(requestDTO.getConfig().getLightColor()))
+                        .withPositionalsColor(Color.decode(requestDTO.getConfig().getPositionalsColor()))
+                        .withCircularPositionals(requestDTO.getConfig().isCircularPositionals())
+                        .withRelativeLogoSize(requestDTO.getConfig().getRelativeLogoSize())
                         .build()));
     }
 

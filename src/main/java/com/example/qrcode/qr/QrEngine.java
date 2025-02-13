@@ -43,11 +43,6 @@ public class QrEngine {
 		return layered;
 	}
 
-	public static void buildQrCodeWithLogo(String text, File logoImage, File outputFile, QrConfiguration conf) throws WriterException, IOException {
-		BufferedImage img = buildQrCodeWithLogo(text, ImageIO.read(logoImage), conf);
-		ImageIO.write(img, "png", outputFile);
-	}
-
 	public static BufferedImage buildQrCodeWithLogo(String text, File logoImage, QrConfiguration conf) throws WriterException, IOException {
 		return buildQrCodeWithLogo(text, ImageIO.read(logoImage), conf);
 	}
