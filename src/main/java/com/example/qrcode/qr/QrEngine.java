@@ -18,40 +18,21 @@ import java.util.Map;
 
 public class QrEngine {
 
-	private static void validateConfiguration(QrConfiguration conf) throws QrConfiguration.InvalidConfigurationException {
+	public static void validateConfiguration(QrConfiguration conf) throws QrConfiguration.InvalidConfigurationException {
 		if (conf == null) throw new QrConfiguration.InvalidConfigurationException("Configuration is null");
 		if (conf.getDarkColor() == null) throw new QrConfiguration.InvalidConfigurationException("Configuration darkColor is null");
 		if (conf.getLightColor() == null) throw new QrConfiguration.InvalidConfigurationException("Configuration lightColor is null");
 		if (conf.getPositionalsColor() == null) throw new QrConfiguration.InvalidConfigurationException("Configuration positionalsColor is null");
-		if (conf.getSize()%4 != 0) throw new QrConfiguration.InvalidConfigurationException("Configuration size must be multiple of 4");
+		if (conf.getSize()==0 || conf.getSize()%4 != 0) throw new QrConfiguration.InvalidConfigurationException("Configuration size must be multiple of 4");
 		if (conf.getRelativeBorderSize() > .1) throw new QrConfiguration.InvalidConfigurationException("Relative border too big, set it < .1");
 		if (conf.getRelativeLogoSize() > .25) throw new QrConfiguration.InvalidConfigurationException("Relative logo too big set it < .25");
 		if (conf.getRelativeBorderRound() > .25) throw new QrConfiguration.InvalidConfigurationException("Relative border round too big set it < .25");
-		return;
-	}
-
-	public static void buildQrCode(String text, File outputFile, QrConfiguration conf) throws WriterException, IOException, QrConfiguration.InvalidConfigurationException {
-		BufferedImage img = buildQrCode(text, conf);
-		ImageIO.write(img, "png", outputFile);
-	}
-
-	public static BufferedImage buildQrCode(String text, QrConfiguration conf) throws WriterException, QrConfiguration.InvalidConfigurationException {
-		validateConfiguration(conf);
-		QRCodeWriter.QRCodeWithPositionals qr = encode(text,conf);
-		BufferedImage qrImage = baseImage(qr, conf);
-		BufferedImage layered = layer(qrImage,null,conf);
-		return layered;
-	}
-
-	public static BufferedImage buildQrCodeWithLogo(String text, File logoImage, QrConfiguration conf) throws WriterException, IOException {
-		return buildQrCodeWithLogo(text, ImageIO.read(logoImage), conf);
 	}
 
 	public static BufferedImage buildQrCodeWithLogo(String text, BufferedImage logoImage, QrConfiguration conf) throws WriterException {
 		QRCodeWriter.QRCodeWithPositionals qr = encode(text,conf);
 		BufferedImage qrImage = baseImage(qr, conf);
-		BufferedImage layered = layer(qrImage,logoImage,conf);
-		return layered;
+        return layer(qrImage,logoImage,conf);
 	}
 
 	private static BufferedImage layer(BufferedImage qrImage, BufferedImage logoImage, QrConfiguration conf) {
@@ -79,6 +60,7 @@ public class QrEngine {
 		graphics.drawImage(qrImage,border,border, null);
 
 		if (logoImage != null) {
+			//addLogoToQrCode(graphics, logoImage, conf, border, white);
 
 			int computedSize = conf.getSize()-(2*border);
 			int centerSize = (int)Math.floor(computedSize*conf.getRelativeLogoSize());
@@ -107,7 +89,6 @@ public class QrEngine {
 			graphics.dispose();
 
 		}
-
 		return image;
 
 	}
