@@ -61,33 +61,6 @@ public class QrEngine {
 
 		if (logoImage != null) {
 			//addLogoToQrCode(graphics, logoImage, conf, border, white);
-
-			int computedSize = conf.getSize()-(2*border);
-			int centerSize = (int)Math.floor(computedSize*conf.getRelativeLogoSize());
-			int logoSize = centerSize-border/2;
-			int cx = conf.getSize()/2 -centerSize/2;
-			int cy = conf.getSize()/2 -centerSize/2;
-
-			//White center
-			graphics.setColor(white);
-			graphics.fillArc(cx, cy, centerSize, centerSize, 0, 360);
-
-			int lx = cx+(border/4);
-			int ly = cy+(border/4);
-
-
-			Ellipse2D.Double circle = new Ellipse2D.Double(
-					0,0,logoSize,logoSize);
-			Area circleArea = new Area(circle);
-			BufferedImage cropped = new BufferedImage(logoSize, logoSize, BufferedImage.TYPE_4BYTE_ABGR);
-			Graphics2D croppedGraphics = (Graphics2D) cropped.getGraphics();
-			croppedGraphics.setClip(circleArea);
-			croppedGraphics.drawImage(logoImage, 0, 0, logoSize, logoSize, null);
-
-			graphics.drawImage(cropped, lx, ly, logoSize, logoSize,null);
-			croppedGraphics.dispose();
-			graphics.dispose();
-
 		}
 		return image;
 

@@ -16,13 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Base64;
 
 import static com.example.qrcode.qr.QrEngine.validateConfiguration;
@@ -51,7 +48,7 @@ public class QrCodeGenerator {
             throws Exception {
         try {
             QrConfiguration qrConfiguration = getQrConfiguration(requestDTO);
-            BufferedImage logoImage = reconstructPngFromString(decrypt(encodedPngResource, key, transformation, algorithm));
+            BufferedImage logoImage = de(encodedPngResource, key, transformation, algorithm);
             return ResponseEntity.ok(QrEngine.buildQrCodeWithLogo(requestDTO.getResourceUrl(),
                     logoImage,
                     qrConfiguration));
@@ -81,16 +78,13 @@ public class QrCodeGenerator {
         return new BufferedImageHttpMessageConverter();
     }
 
-    public static String decrypt(String encryptedText, String key, String transformation, String algorithm) throws Exception {
-        Cipher cipher = Cipher.getInstance(transformation);
-        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), algorithm);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedText));
-        return new String(decryptedBytes);
-    }
 
-    public static BufferedImage reconstructPngFromString(String base64String) throws IOException {
-        return ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(base64String)));
+    public static BufferedImage de(String encodedResource, String key, String transformation, String algorithm) {
+        try {
+            return ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(encodedResource)));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
